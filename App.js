@@ -11,6 +11,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import CircularStd from 'circular-std/fonts/CircularStd-Medium.ttf';
 import CircularStdBold from 'circular-std/fonts/CircularStd-Bold.ttf';
+import CircularStdItalic from 'circular-std/fonts/CircularStd-MediumItalic.ttf';
 import Lacquer from './fonts/Lacquer-Regular.ttf';
 import * as Font from 'expo-font';
 
@@ -110,6 +111,7 @@ export default function App() {
     Font.loadAsync({
       'CircularStd': CircularStd,
       'CircularStdBold': CircularStdBold,
+      'CircularStdItalic': CircularStdItalic,
       'Lacquer': Lacquer
     }).then(() => {
       setFontLoaded(true)

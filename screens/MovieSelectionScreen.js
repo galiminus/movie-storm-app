@@ -9,7 +9,9 @@ import {
   Card,
   withStyles,
   Button,
-  ButtonGroup
+  ButtonGroup,
+  Spinner,
+  useTheme
 } from '@ui-kitten/components';
 import { View, Image, Animated, Dimensions, Easing } from 'react-native';
 import useGetMovieSelection from '../hooks/useGetMovieSelection';
@@ -27,17 +29,32 @@ const ForwardIcon = (style) => (
 );
 
 const MovieCard = ({ movie, themedStyle, onPressRate }) => {
+  const theme = useTheme();
   return (
     <View
       appearance="outline"
       style={[ themedStyle.card ]}
       key={movie.id}
     >
-      <Image
-        style={themedStyle.backdrop}
-        resizeMode={'cover'}
-        source={{ uri: `https://image.tmdb.org/t/p/w780/${movie.backdropPath || movie.posterPath}` }}
-      />
+        {
+          movie.backdropPath || movie.posterPath ? (
+            <View
+              style={themedStyle.backdropContainer}
+            >
+              <Image
+                style={themedStyle.backdrop}
+                resizeMode={'cover'}
+                source={{ uri: `https://image.tmdb.org/t/p/w780/${movie.backdropPath || movie.posterPath}` }}
+              />
+            </View>
+          ) : (
+            <View
+              style={themedStyle.noBackdrop}
+            >
+              <Icon width={92} height={92} fill={theme['color-basic-800']} name="image-2" />
+            </View>
+          )
+        }
       <Text
         style={themedStyle.title}
         category='h6'
@@ -48,9 +65,17 @@ const MovieCard = ({ movie, themedStyle, onPressRate }) => {
       <View
         style={themedStyle.overview}
       >
-        <Text style={themedStyle.overviewText} numberOfLines={4}>
-           {movie.overview}
-        </Text>
+        {
+          movie.overview ? (
+            <Text style={themedStyle.overviewText} numberOfLines={4}>
+               {movie.overview}
+            </Text>
+          ) : (
+            <Text style={[ themedStyle.overviewText, { fontFamily: 'CircularStdItalic', color: theme['color-basic-600'] } ]} numberOfLines={4}>
+              No description
+            </Text>
+          )
+        }
       </View>
       <View style={themedStyle.starsContainer} >
         <ButtonGroup style={themedStyle.buttonGroup} appearance='outline' status="warning" size="small">
@@ -83,6 +108,7 @@ const MovieSelectionScreen = ({ navigation, route, themedStyle }) => {
   const [ index, setIndex ] = useState(0);
   const [ counter, setCounter ] = useState(1);
   const [ rotations, setRotations ] = useState([]);
+  const theme = useTheme();
 
   const { initial } = route.params;
 
@@ -113,11 +139,6 @@ const MovieSelectionScreen = ({ navigation, route, themedStyle }) => {
     });
   }
 
-  if (movieSelectionLoading) {
-    <View style={[ themedStyle.rootContainer ]}>
-    </View>
-  }
-
   return (
     <SafeAreaConsumer>
       {
@@ -139,74 +160,84 @@ const MovieSelectionScreen = ({ navigation, route, themedStyle }) => {
                   onPress={() => navigation.navigate("Home")}
                 />
               ] : [
-                <Text style={{ lineHeight: 24, marginRight: 8 }}>{`${counter}/${movieSelection.length}`}</Text>,
+                <Text style={{ lineHeight: 24, marginRight: 8 }}>
+                  {movieSelection.length > 0 && `${counter}/${movieSelection.length}`}
+                </Text>,
               ]}
-              title={!initial ? 'Home' : `${counter}/${movieSelection.length}`}
+              title={!initial ? 'Home' : movieSelection.length > 0 && `${counter}/${movieSelection.length}`}
               titleStyle={{ marginLeft: 8 }}
             />
             {
-              [1, 0].map((offset) => (
-                movieSelection[index + offset] ? (
-                  <Animated.View
-                    key={movieSelection[index + offset].id}
-                    style={{
-                      flex: 1,
-                      transform: [
-                        { translateX: -(VIEWPORT_WIDTH  / 2) - 300 },
-                        { translateY: (VIEWPORT_HEIGHT  / 2) - 300},
-                        { rotate: rotations[index + offset] ? rotations[index + offset] : 0 },
-                        { translateX: (VIEWPORT_WIDTH  / 2) + 300 },
-                        { translateY: -(VIEWPORT_HEIGHT  / 2) + 300},
-                      ],
-                      position: 'absolute',
-                      top: insets.top + 54,
-                      left: 0,
-                      height: VIEWPORT_HEIGHT - insets.top - 54,
-                      zIndex: 1 - offset,
-                    }}
-                  >
-                    <Layout
-                      style={themedStyle.layout}
+              movieSelection.length > 0 ? (
+                [1, 0].map((offset) => (
+                  movieSelection[index + offset] ? (
+                    <Animated.View
+                      key={movieSelection[index + offset].id}
+                      style={{
+                        flex: 1,
+                        transform: [
+                          { translateX: -(VIEWPORT_WIDTH  / 2) - 300 },
+                          { translateY: (VIEWPORT_HEIGHT  / 2) - 300},
+                          { rotate: rotations[index + offset] ? rotations[index + offset] : 0 },
+                          { translateX: (VIEWPORT_WIDTH  / 2) + 300 },
+                          { translateY: -(VIEWPORT_HEIGHT  / 2) + 300},
+                        ],
+                        position: 'absolute',
+                        top: insets.top + 54,
+                        left: 0,
+                        height: VIEWPORT_HEIGHT - insets.top - 54,
+                        zIndex: 1 - offset,
+                      }}
                     >
-                      <MovieCard
-                        movie={movieSelection[index + offset]}
-                        themedStyle={themedStyle}
-                        onPressRate={(grade) => {
+                      <Layout
+                        style={themedStyle.layout}
+                      >
+                        <MovieCard
+                          movie={movieSelection[index + offset]}
+                          themedStyle={themedStyle}
+                          onPressRate={(grade) => {
+                            createRating({
+                              variables: {
+                                input: {
+                                  movieId: movieSelection[index + offset].id,
+                                  grade: grade,
+                                  seenAt: new Date().toString(),
+                                }
+                              }
+                            });
+                            handleNextMovie(index, offset);
+                          }}
+                        />
+                      </Layout>
+                      <BottomButton
+                        size="large"
+                        style={[ themedStyle.skipButton, { flexDirection: 'row-reverse' }]}
+                        last
+                        onPress={() => {
                           createRating({
                             variables: {
                               input: {
                                 movieId: movieSelection[index + offset].id,
-                                grade: grade,
-                                seenAt: new Date().toString(),
+                                grade: null,
+                                seenAt: null,
                               }
                             }
                           });
                           handleNextMovie(index, offset);
                         }}
-                      />
-                    </Layout>
-                    <BottomButton
-                      size="large"
-                      style={[ themedStyle.skipButton, { flexDirection: 'row-reverse' }]}
-                      last
-                      onPress={() => {
-                        createRating({
-                          variables: {
-                            input: {
-                              movieId: movieSelection[index + offset].id,
-                              grade: null,
-                              seenAt: null,
-                            }
-                          }
-                        });
-                        handleNextMovie(index, offset);
-                      }}
-                    >
-                      I didn't see this movie
-                    </BottomButton>
-                  </Animated.View>
-                ) : null
-              ))
+                      >
+                        I didn't see this movie
+                      </BottomButton>
+                    </Animated.View>
+                  ) : null
+                ))
+              ) : (
+                <View
+                  style={themedStyle.spinnerContainer}
+                >
+                  <Spinner size='giant' status={'control'} />
+                </View>
+              )
             }
           </View>
         )
@@ -227,9 +258,31 @@ export const MovieSelectionScreenWithStyles = withStyles(MovieSelectionScreen, t
     marginTop: 16,
     marginBottom: 8,
   },
-  backdrop: {
+  backdropContainer: {
     flex: 1,
     marginHorizontal: 16,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 1.5,
+    borderRadius: 8,
+  },
+  backdrop: {
+    flex: 1,
+    overflow: 'hidden',
+    borderRadius: 8,
+    width: VIEWPORT_WIDTH - 32,
+  },
+  noBackdrop: {
+    marginHorizontal: 16,
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: theme['color-basic-700'],
+    borderRadius: 8,
   },
   overview: {
     borderTopWidth: 0.5,
@@ -271,6 +324,11 @@ export const MovieSelectionScreenWithStyles = withStyles(MovieSelectionScreen, t
   skipButton: {
     backgroundColor: theme['color-basic-900'],
   },
+  spinnerContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  }
 }));
 
 export default MovieSelectionScreenWithStyles;

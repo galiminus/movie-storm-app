@@ -24,7 +24,7 @@ const HomeScreen = ({ navigation, themedStyle }) => {
           <View style={[themedStyle.rootContainer, { paddingTop: insets.top }]}>
             <TopNavigation
               title='MOVIE STORM'
-              titleStyle={{ fontSize: 18, paddingLeft: 12, fontFamily: 'Lacquer' }}
+              titleStyle={{ fontSize: 18, paddingLeft: 12 }}
               rightControls={[
                 <TouchableOpacity
                   onPress={() => navigation.navigate("MovieSelection", { initial: false })}
