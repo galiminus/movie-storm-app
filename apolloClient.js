@@ -9,6 +9,8 @@ import Constants from 'expo-constants';
 import * as SecureStore from 'expo-secure-store';
 
 const createClient = async () => {
+  // await SecureStore.deleteItemAsync('token');
+
   const cache = new InMemoryCache({
     dataIdFromObject: object => {
       switch (object.__typename) {
@@ -88,7 +90,7 @@ const createClient = async () => {
       Query: {
         token: async () => {
           const token = await SecureStore.getItemAsync('token');
-
+          // return null;
           return token;
         },
       },
@@ -133,7 +135,8 @@ const createClient = async () => {
     cache
   });
 
-  const defaultData = {};
+  const defaultData = {
+  };
 
   cache.writeData({
     data: defaultData
