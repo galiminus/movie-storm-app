@@ -11,25 +11,20 @@ import {
   Button,
   ButtonGroup,
   Spinner,
+  Modal,
   useTheme
 } from '@ui-kitten/components';
-import { View, Image, Animated, Dimensions, Easing } from 'react-native';
+import useDimensions from "react-native-use-dimensions";
+import { View, Image, Animated, Dimensions, Easing, TouchableOpacity, ImageBackground } from 'react-native';
 import useGetMovieSelection from '../hooks/useGetMovieSelection';
 import useCreateRating from '../hooks/useCreateRating';
 import BottomButton from '../components/BottomButton';
 
-const { width: VIEWPORT_WIDTH, height: VIEWPORT_HEIGHT } = Dimensions.get('window');
-
-const BackIcon = (style) => (
-  <Icon {...style} name='arrow-back'/>
-);
-
-const ForwardIcon = (style) => (
-  <Icon {...style} name='arrow-forward'/>
-);
-
 const MovieCard = ({ movie, themedStyle, onPressRate }) => {
   const theme = useTheme();
+  const [ overviewModalOpen, setOverviewModalOpen ] = useState(false);
+  const { screen } = useDimensions();
+
   return (
     <View
       appearance="outline"
@@ -42,7 +37,7 @@ const MovieCard = ({ movie, themedStyle, onPressRate }) => {
               style={themedStyle.backdropContainer}
             >
               <Image
-                style={themedStyle.backdrop}
+                style={[ themedStyle.backdrop, { width: screen.width - 32 }]}
                 resizeMode={'cover'}
                 source={{ uri: `https://image.tmdb.org/t/p/w780/${movie.backdropPath || movie.posterPath}` }}
               />
@@ -67,9 +62,13 @@ const MovieCard = ({ movie, themedStyle, onPressRate }) => {
       >
         {
           movie.overview ? (
-            <Text style={themedStyle.overviewText} numberOfLines={4}>
-               {movie.overview}
-            </Text>
+            <TouchableOpacity
+              onPress={() => setOverviewModalOpen(true)}
+            >
+              <Text style={themedStyle.overviewText} numberOfLines={4}>
+                 {movie.overview}
+              </Text>
+            </TouchableOpacity>
           ) : (
             <Text style={[ themedStyle.overviewText, { fontFamily: 'CircularStdItalic', color: theme['color-basic-600'] } ]} numberOfLines={4}>
               No description
@@ -96,9 +95,111 @@ const MovieCard = ({ movie, themedStyle, onPressRate }) => {
         </ButtonGroup>
         <Text style={themedStyle.rateActionText}>Rate this movie</Text>
       </View>
+      <Modal
+        backdropStyle={themedStyle.modalBackdrop}
+        onBackdropPress={() => setOverviewModalOpen(false)}
+        visible={overviewModalOpen}
+      >
+        <View
+          style={themedStyle.overviewModalContainer}
+        >
+          <Text
+            style={[ themedStyle.title, { textDecorationLine: 'underline' }]}
+            category='h6'
+          >
+            {movie.title}
+          </Text>
+          <Text style={themedStyle.overviewText}>
+            {movie.overview}
+          </Text>
+          <Button
+            appearance="outline"
+            status="control"
+            style={themedStyle.closeButton}
+            size="tiny"
+            onPress={() => setOverviewModalOpen(false)}
+          >
+            CLOSE
+          </Button>
+        </View>
+      </Modal>
     </View>
   );
 }
+
+export const MovieCardScreenWithStyles = withStyles(MovieCard, theme => ({
+  title: {
+    marginHorizontal: 16,
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  backdropContainer: {
+    flex: 1,
+    marginHorizontal: 16,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 1.5,
+    borderRadius: 8,
+  },
+  backdrop: {
+    flex: 1,
+    overflow: 'hidden',
+    borderRadius: 8,
+  },
+  noBackdrop: {
+    marginHorizontal: 16,
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: theme['color-basic-700'],
+    borderRadius: 8,
+  },
+  overview: {
+    borderTopWidth: 0.5,
+    marginHorizontal: 16,
+    paddingVertical: 8,
+    borderTopColor: theme['color-basic-600']
+  },
+  overviewText: {
+    textAlign: 'justify',
+  },
+  card: {
+    flex: 1,
+    borderWidth: 0,
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+    backgroundColor: theme['color-basic-800'],
+  },
+  starsContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
+    marginTop: 16,
+  },
+  rateActionText: {
+    marginTop: 8,
+    color: theme['color-warning-600']
+  },
+  modalBackdrop: {
+    backgroundColor: 'rgba(0, 0, 0, 0.9)',
+  },
+  overviewModalContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 300,
+  },
+  closeButton: {
+    marginTop: 32,
+    backgroundColor: 'black'
+  }
+}));
 
 const MovieSelectionScreen = ({ navigation, route, themedStyle }) => {
   const [ createRating ] = useCreateRating();
@@ -106,8 +207,12 @@ const MovieSelectionScreen = ({ navigation, route, themedStyle }) => {
   const { data: movieSelectionData, loading: movieSelectionLoading } = useGetMovieSelection({ fetchPolicy: 'no-cache' });
   const movieSelection = movieSelectionData?.viewer?.movieSelection || [];
   const [ index, setIndex ] = useState(0);
+
   const [ counter, setCounter ] = useState(1);
   const [ rotations, setRotations ] = useState([]);
+
+  const { screen } = useDimensions();
+
   const theme = useTheme();
 
   const { initial } = route.params;
@@ -148,15 +253,19 @@ const MovieSelectionScreen = ({ navigation, route, themedStyle }) => {
               leftControl={
                 !initial ? (
                   <TopNavigationAction
-                    icon={BackIcon}
+                    icon={(style) => <Icon {...style} name='arrow-back'/>}
                     onPress={() => navigation.navigate("Home")}
                   />
                 ) : null
               }
               rightControls={initial ? [
-                <Text style={{ lineHeight: 24 }}>Skip this step</Text>,
+                <TouchableOpacity
+                  onPress={() => navigation.navigate("Home")}
+                >
+                  <Text style={{ lineHeight: 24 }}>Skip this step</Text>
+                </TouchableOpacity>,
                 <TopNavigationAction
-                  icon={ForwardIcon}
+                  icon={(style) => <Icon {...style} name='arrow-forward'/>}
                   onPress={() => navigation.navigate("Home")}
                 />
               ] : [
@@ -164,7 +273,7 @@ const MovieSelectionScreen = ({ navigation, route, themedStyle }) => {
                   {movieSelection.length > 0 && `${counter}/${movieSelection.length}`}
                 </Text>,
               ]}
-              title={!initial ? 'Home' : movieSelection.length > 0 && `${counter}/${movieSelection.length}`}
+              title={!initial ? 'Rate more movies' : movieSelection.length > 0 && `${counter}/${movieSelection.length}`}
               titleStyle={{ marginLeft: 8 }}
             />
             {
@@ -176,25 +285,24 @@ const MovieSelectionScreen = ({ navigation, route, themedStyle }) => {
                       style={{
                         flex: 1,
                         transform: [
-                          { translateX: -(VIEWPORT_WIDTH  / 2) - 300 },
-                          { translateY: (VIEWPORT_HEIGHT  / 2) - 300},
+                          { translateX: -(screen.width  / 2) - 300 },
+                          { translateY: (screen.height  / 2) - 300},
                           { rotate: rotations[index + offset] ? rotations[index + offset] : 0 },
-                          { translateX: (VIEWPORT_WIDTH  / 2) + 300 },
-                          { translateY: -(VIEWPORT_HEIGHT  / 2) + 300},
+                          { translateX: (screen.width  / 2) + 300 },
+                          { translateY: -(screen.height  / 2) + 300},
                         ],
                         position: 'absolute',
                         top: insets.top + 54,
                         left: 0,
-                        height: VIEWPORT_HEIGHT - insets.top - 54,
+                        height: screen.height - insets.top - 54,
                         zIndex: 1 - offset,
                       }}
                     >
                       <Layout
                         style={themedStyle.layout}
                       >
-                        <MovieCard
+                        <MovieCardScreenWithStyles
                           movie={movieSelection[index + offset]}
-                          themedStyle={themedStyle}
                           onPressRate={(grade) => {
                             createRating({
                               variables: {
@@ -253,82 +361,19 @@ export const MovieSelectionScreenWithStyles = withStyles(MovieSelectionScreen, t
     flex: 1,
     flexDirection: 'column'
   },
-  title: {
-    marginHorizontal: 16,
-    marginTop: 16,
-    marginBottom: 8,
-  },
-  backdropContainer: {
-    flex: 1,
-    marginHorizontal: 16,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 1.5,
-    borderRadius: 8,
-  },
-  backdrop: {
-    flex: 1,
-    overflow: 'hidden',
-    borderRadius: 8,
-    width: VIEWPORT_WIDTH - 32,
-  },
-  noBackdrop: {
-    marginHorizontal: 16,
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: theme['color-basic-700'],
-    borderRadius: 8,
-  },
-  overview: {
-    borderTopWidth: 0.5,
-    marginHorizontal: 16,
-    paddingVertical: 8,
-    borderTopColor: theme['color-basic-600']
-  },
-  overviewText: {
-    textAlign: 'justify',
-  },
-  card: {
-    flex: 1,
-    borderWidth: 0,
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'flex-start',
-    backgroundColor: theme['color-basic-800'],
-  },
-  buttonGroup: {
-  },
   layout: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'red',
-  },
-  starsContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 16,
-    marginTop: 16,
-  },
-  rateActionText: {
-    marginTop: 8,
-    color: theme['color-warning-600']
-  },
-  skipButton: {
-    backgroundColor: theme['color-basic-900'],
   },
   spinnerContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-  }
+  },
+  skipButton: {
+    backgroundColor: theme['color-basic-900'],
+  },
 }));
 
 export default MovieSelectionScreenWithStyles;

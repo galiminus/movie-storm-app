@@ -13,15 +13,17 @@ import CircularStd from 'circular-std/fonts/CircularStd-Medium.ttf';
 import CircularStdBold from 'circular-std/fonts/CircularStd-Bold.ttf';
 import CircularStdItalic from 'circular-std/fonts/CircularStd-MediumItalic.ttf';
 import Lacquer from './fonts/Lacquer-Regular.ttf';
+import RobotoMonoBold from './fonts/RobotoMono-Bold.ttf';
 import * as Font from 'expo-font';
 
 import createClient from './apolloClient';
-import useGetViewer from './hooks/useGetViewer';
 import useGetToken from './hooks/useGetToken';
 import useGetWizard from './hooks/useGetWizard';
 import WelcomeScreen from './screens/WelcomeScreen';
 import HomeScreen from './screens/HomeScreen';
 import MovieSelectionScreen from './screens/MovieSelectionScreen';
+import SettingsScreen from './screens/SettingsScreen';
+import GroupLobbyScreen from './screens/GroupLobbyScreen';
 
 const RootStack = createStackNavigator();
 
@@ -64,6 +66,16 @@ const Viewer = () => {
           component={HomeScreen}
           options={DEFAULT_SCREEN_OPTIONS}
         />
+        <RootStack.Screen
+          name="Settings"
+          component={SettingsScreen}
+          options={DEFAULT_SCREEN_OPTIONS}
+        />
+        <RootStack.Screen
+          name="GroupLobby"
+          component={GroupLobbyScreen}
+          options={DEFAULT_SCREEN_OPTIONS}
+        />
       </RootStack.Navigator>
     </NavigationContainer>
   );
@@ -75,27 +87,7 @@ const customMapping = {
     ...mapping.strict,
     "text-font-family": "CircularStd"
   },
-  // components: {
-  //   ...mapping.components,
-  //   Card: {
-  //     ...mapping.components.Card,
-  //     appearances: {
-  //       ...mapping.components.Card.appearances,
-  //       outline: {
-  //         ...mapping.components.Card.appearances.outline,
-  //         mapping: {
-  //           ...mapping.components.Card.appearances.outline.mapping,
-  //           bodyPaddingHorizontal: 16,
-  //           footerPaddingHorizontal: 16,
-  //           headerPaddingHorizontal: 16,
-  //         }
-  //       }
-  //     }
-  //   }
-  // }
 };
-
-// console.log(JSON.stringify(customMapping))
 
 export default function App() {
   const [ apolloClient, setApolloClient ] = useState(null);
@@ -112,7 +104,8 @@ export default function App() {
       'CircularStd': CircularStd,
       'CircularStdBold': CircularStdBold,
       'CircularStdItalic': CircularStdItalic,
-      'Lacquer': Lacquer
+      'Lacquer': Lacquer,
+      'RobotoMonoBold': RobotoMonoBold,
     }).then(() => {
       setFontLoaded(true)
     })

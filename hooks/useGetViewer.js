@@ -4,6 +4,7 @@ import gql from 'graphql-tag';
 export const GET_VIEWER = gql`{
   viewer {
     id
+    name
   }
 }
 `;

@@ -2,7 +2,7 @@ import React from 'react';
 import { SafeAreaConsumer } from 'react-native-safe-area-context';
 import { Button } from '@ui-kitten/components';
 
-const BottomButton = ({ children, style, size, last = false, ...props }) => {
+const BottomButton = ({ children, style, size, hidden, last = false, ...props }) => {
   let padding = 8;
   switch (size) {
     case 'giant':
@@ -12,6 +12,7 @@ const BottomButton = ({ children, style, size, last = false, ...props }) => {
       padding = 16;
       break;
   }
+
   return (
     <SafeAreaConsumer>
       {(insets) => (
@@ -24,7 +25,8 @@ const BottomButton = ({ children, style, size, last = false, ...props }) => {
               borderRadius: 0,
               borderWidth: 0,
             },
-            style
+            style,
+            { opacity: hidden ? 0 : 1 }
           ]}
           size={size}
           {...props}

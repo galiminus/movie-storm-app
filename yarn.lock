@@ -3124,6 +3124,11 @@ inherits@2, inherits@2.0.4, inherits@^2.0.3, inherits@~2.0.3:
   resolved "https://registry.yarnpkg.com/inherits/-/inherits-2.0.4.tgz#0fa2c64f932917c3433a0ded55363aae37416b7c"
   integrity sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ==
 
+initials@^2.1.5:
+  version "2.1.5"
+  resolved "https://registry.yarnpkg.com/initials/-/initials-2.1.5.tgz#36cc96c9986d80e12e3d34dacd9faafbd8357462"
+  integrity sha1-NsyWyZhtgOEuPTTazZ+q+9g1dGI=
+
 inline-style-prefixer@^5.0.3:
   version "5.1.2"
   resolved "https://registry.yarnpkg.com/inline-style-prefixer/-/inline-style-prefixer-5.1.2.tgz#e5a5a3515e25600e016b71e39138971228486c33"
@@ -4677,6 +4682,18 @@ react-native-svg@9.13.3:
   dependencies:
     css-select "^2.0.2"
     css-tree "^1.0.0-alpha.37"
+
+react-native-use-dimensions@^1.3.0:
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/react-native-use-dimensions/-/react-native-use-dimensions-1.3.0.tgz#d60559756eaee148f06923903d765f14985eedcb"
+  integrity sha512-muwSVE++pjw6d+k2jVi0JcFgqyZ1kzRPiVkNmSsz1jX9NLvEG1ERdAoWhQBmP9BjwCwleHVBJ4QGiC3gmbkC4A==
+
+react-native-user-avatar@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/react-native-user-avatar/-/react-native-user-avatar-1.0.4.tgz#38be5dbaee6358b014c509a044008387287f00cb"
+  integrity sha512-tP/oNsDSQy3e16arJC/neP4laG5t6enwwYZUnYnuSeUl/Z40kkjRRf+ZVo1LCTT3cC7zez8YLWCZcpRrdnAiKA==
+  dependencies:
+    initials "^2.1.5"
 
 react-native-view-shot@3.0.2:
   version "3.0.2"
