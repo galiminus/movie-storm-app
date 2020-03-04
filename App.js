@@ -74,7 +74,7 @@ const Viewer = () => {
         <RootStack.Screen
           name="GroupLobby"
           component={GroupLobbyScreen}
-          options={DEFAULT_SCREEN_OPTIONS}
+          options={{ ...DEFAULT_SCREEN_OPTIONS, needUserConfirmation: true }}
         />
       </RootStack.Navigator>
     </NavigationContainer>

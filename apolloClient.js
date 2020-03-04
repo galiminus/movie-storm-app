@@ -93,6 +93,11 @@ const createClient = async () => {
           // return null;
           return token;
         },
+        groupId: async () => {
+          const groupId = await SecureStore.getItemAsync('groupId');
+          // return null;
+          return groupId;
+        },
       },
       Mutation: {
         setToken: async (_, { token }, { cache }) => {
@@ -105,9 +110,24 @@ const createClient = async () => {
           }
           return null;
         },
+        setGroupId: async (_, { groupId }, { cache }) => {
+
+          try {
+          await SecureStore.setItemAsync('groupId', groupId, { keychainAccessible: SecureStore.ALWAYS });
+            cache.writeData({ data: { groupId }});
+          } catch (e) {
+            console.log(e);
+          }
+          return null;
+        },
         deleteToken: async (_, _params, { cache }) => {
           await SecureStore.deleteItemAsync('token');
           cache.writeData({ data: { token: null }});
+          return null;
+        },
+        deleteGroupId: async (_, _params, { cache }) => {
+          await SecureStore.deleteItemAsync('groupId');
+          cache.writeData({ data: { groupId: null }});
           return null;
         },
       }

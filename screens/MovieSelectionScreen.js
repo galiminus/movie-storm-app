@@ -24,6 +24,7 @@ const MovieCard = ({ movie, themedStyle, onPressRate }) => {
   const theme = useTheme();
   const [ overviewModalOpen, setOverviewModalOpen ] = useState(false);
   const { screen } = useDimensions();
+  const [ chosenGrade, setChosenGrade ] = useState(0);
 
   return (
     <View
@@ -83,9 +84,10 @@ const MovieCard = ({ movie, themedStyle, onPressRate }) => {
               <Button
                 key={grade}
                 textStyle={{ marginLeft: 0 }}
-                icon={(style) => <Icon {...style} name='star-outline' />}
+                icon={(style) => <Icon {...style} name={grade === chosenGrade ? 'star' : 'star-outline'} />}
                 onPress={() => {
-                  onPressRate(grade)
+                  setChosenGrade(grade);
+                  onPressRate(grade);
                 }}
               >
                 {`${grade}`}
@@ -312,7 +314,7 @@ const MovieSelectionScreen = ({ navigation, route, themedStyle }) => {
                                   seenAt: new Date().toString(),
                                 }
                               }
-                            });
+                            })
                             handleNextMovie(index, offset);
                           }}
                         />

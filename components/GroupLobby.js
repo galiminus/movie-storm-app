@@ -13,9 +13,8 @@ import {
 
 import { View, Image, TouchableOpacity, FlatList } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
+import useDimensions from "react-native-use-dimensions";
 
-import useDeleteViewer from '../hooks/useDeleteViewer';
-import useDeleteToken from '../hooks/useDeleteToken';
 import useGetGroup from '../hooks/useGetGroup';
 import useLeaveGroup from '../hooks/useLeaveGroup';
 import useDeleteGroup from '../hooks/useDeleteGroup';
@@ -24,54 +23,16 @@ import useGetViewer from '../hooks/useGetViewer';
 import BottomButton from '../components/BottomButton';
 import UserAvatar from '../components/UserAvatar';
 
-const GroupLobbyScreen = ({ navigation, route, themedStyle }) => {
-  const { code, id } = route.params;
-
+const GroupLobby = ({ groupData, themedStyle, id }) => {
   const [ leaveGroup ] = useLeaveGroup();
   const [ deleteGroup ] = useDeleteGroup();
-
-  const { data: groupData, loading: groupLoading, error: groupError } = useGetGroup({ variables: { id }, pollInterval: 3000 });
-  const users = groupData?.viewer?.group?.users || [];
-
-  useEffect(() => {
-    if (groupError) {
-      navigation.goBack();
-    }
-  }, [groupError]);
-
-  const owned = groupData?.viewer?.id === groupData?.viewer?.group?.owner?.id;
-
-  useFocusEffect(
-    useCallback(() => {
-      return () => {
-        if (groupLoading) {
-          return;
-        }
-        if (owned) {
-          deleteGroup({ variables: { input: { id }} });
-        } else {
-          leaveGroup({ variables: { input: { id }} });
-        }
-      }
-    }, [groupLoading])
-  );
+  const { screen } = useDimensions();
 
   return (
     <SafeAreaConsumer>
       {
         (insets) => (
-          <View style={[themedStyle.rootContainer, { paddingTop: insets.top }]}>
-            <TopNavigation
-              title='Create a room'
-              leftControl={
-                <TopNavigationAction
-                  icon={(style) => <Icon {...style} name='arrow-back'/>}
-                  onPress={() => {
-                    navigation.goBack();
-                  }}
-                />
-              }
-            />
+          <View style={[themedStyle.rootContainer, { borderTopLeftRadius: 12, borderTopRightRadius: 12, overflow: 'hidden', height: screen.height - insets.top - 14 } ]}>
             <View style={themedStyle.codeLayout}>
               <Text category="s1">
                 Share this code with your friends
@@ -79,38 +40,33 @@ const GroupLobbyScreen = ({ navigation, route, themedStyle }) => {
               <Text
                 style={themedStyle.code}
               >
-                {code.toUpperCase()}
+                {groupData.viewer.group.code.toUpperCase()}
               </Text>
             </View>
             <View style={themedStyle.layout}>
-              <FlatList
-                ListFooterComponent={<View style={{ paddingTop: 24 }} />}
-                numColumns={4}
-                showsVerticalScrollIndicator={false}
-                data={users}
-                keyExtractor={(item, index) => item.id}
-                renderItem={({ item }) => (
-                  <View key={item.id} style={themedStyle.userItem}>
-                    <UserAvatar
-                      size={64}
-                      user={item}
-                    />
-                    <Text style={{ marginTop: 8 }} numberOfLines={1}>{item.name}</Text>
-                  </View>
-                )}
-              />
+            {
+              groupData.viewer.group.users.map((user, index) => (
+                <View key={`${user.id}-${index}`} style={themedStyle.userItem}>
+                  <UserAvatar
+                    size={64}
+                    user={user}
+                  />
+                  <Text style={{ marginTop: 8 }} numberOfLines={1}>{user.name}</Text>
+                </View>
+              ))
+            }
             </View>
             <View
               style={themedStyle.userCounter}
             >
               {
-                users.length <= 1 ?
-                <Text>{`One person in the room`}</Text> :
-                <Text>{`${users.length} people in the room`}</Text>
+                groupData.viewer.group.users.length <= 1 ?
+                  <Text>{`One person in the room`}</Text> :
+                  <Text>{`${groupData.viewer.group.users.length} people in the room`}</Text>
               }
             </View>
             {
-              owned ? (
+              groupData.viewer.id === groupData.viewer.group.owner.id ? (
                 <BottomButton
                   style={[ themedStyle.startButton, { flexDirection: 'row-reverse' }]}
                   size="giant"
@@ -126,7 +82,7 @@ const GroupLobbyScreen = ({ navigation, route, themedStyle }) => {
                   size="giant"
                   last
                 >
-                  {`WAITING FOR ${groupData?.viewer?.group?.owner?.name.toUpperCase()}`}
+                  {`WAITING FOR ${groupData.viewer.group.owner.name.toUpperCase()}`}
                 </BottomButton>
               )
             }
@@ -139,12 +95,11 @@ const GroupLobbyScreen = ({ navigation, route, themedStyle }) => {
 }
 
 
-export const GroupLobbyScreenWithStyles = withStyles(GroupLobbyScreen, theme => ({
+export const GroupLobbyWithStyles = withStyles(GroupLobby, theme => ({
   rootContainer: {
-    backgroundColor: theme['color-basic-800'],
     display: 'flex',
     flex: 1,
-    flexDirection: 'column'
+    flexDirection: 'column',
   },
   codeLayout: {
     flex: 0,
@@ -162,9 +117,11 @@ export const GroupLobbyScreenWithStyles = withStyles(GroupLobbyScreen, theme => 
     fontFamily: 'RobotoMonoBold'
   },
   layout: {
-    flex: 4,
+    flex: 1,
     display: 'flex',
     flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'flex-start',
   },
   startButton: {
     backgroundColor: theme['color-danger-500'],
@@ -174,9 +131,9 @@ export const GroupLobbyScreenWithStyles = withStyles(GroupLobbyScreen, theme => 
   },
   userItem: {
     paddingTop: 24,
-    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    minWidth: '33%'
   },
   userCounter: {
     padding: 16,
@@ -184,4 +141,4 @@ export const GroupLobbyScreenWithStyles = withStyles(GroupLobbyScreen, theme => 
   }
 }));
 
-export default GroupLobbyScreenWithStyles;
+export default GroupLobbyWithStyles;

@@ -8,8 +8,10 @@ export const GET_GROUP = gql`
       group(id: $id) {
         id
         code
+        state
         owner {
           id
+          name
         }
         users {
           id

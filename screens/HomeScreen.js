@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { SafeAreaConsumer } from 'react-native-safe-area-context';
 import {
   Icon,
@@ -23,13 +23,19 @@ import AnimatedImageBackground from '../components/AnimatedImageBackground';
 import useCreateGroup from '../hooks/useCreateGroup';
 import useJoinGroup from '../hooks/useJoinGroup';
 import useGetViewer from '../hooks/useGetViewer';
+
+import useGetGroupId from '../hooks/useGetGroupId';
+import useDeleteGroupId from '../hooks/useDeleteGroupId';
+import useSetGroupId from '../hooks/useSetGroupId';
+import useLeaveGroup from '../hooks/useLeaveGroup';
+import useDeleteGroup from '../hooks/useDeleteGroup';
+
 import useUpdateViewer from '../hooks/useUpdateViewer';
 import useGetMovieSelection from '../hooks/useGetMovieSelection';
 
-const HomeScreen = ({ navigation, themedStyle }) => {
-  const [ createGroup, { loading: createGroupLoading } ] = useCreateGroup();
-  const [ joinGroup, { loading: joinGroupLoading, error: joinGroupError } ] = useJoinGroup();
+import GroupModal from '../components/GroupModal';
 
+const HomeScreen = ({ navigation, themedStyle }) => {
   const { data: viewerData } = useGetViewer();
   const [ updateViewer, { loading: updateViewerLoading } ] = useUpdateViewer();
 
@@ -50,9 +56,51 @@ const HomeScreen = ({ navigation, themedStyle }) => {
   const movieSelection = movieSelectionData?.viewer?.movieSelection || [];
   const [ imageBackgroundLoaded, setImageBackgroundLoaded ] = useState(false);
 
-  const loading = !viewerData || !imageBackgroundLoaded;
+  const contentLoading = !viewerData || !imageBackgroundLoaded;
   const isProfileValid = name.trim().length > 0 && viewerData?.viewer?.name?.trim()?.length > 0;
-  // const isProfileValid = name.trim().length > 0;
+
+  const { data: groupIdData } = useGetGroupId();
+  const [ deleteGroupId ] = useDeleteGroupId();
+  const [ setGroupId ] = useSetGroupId();
+
+  const [
+    createGroup,
+    {
+      loading: createGroupLoading,
+    }
+  ] = useCreateGroup();
+
+  const [
+    joinGroup,
+    {
+      loading: joinGroupLoading,
+      error: joinGroupError
+    }
+  ] = useJoinGroup();
+
+  const [
+    leaveGroup,
+    {
+      loading: leaveGroupLoading,
+    }
+  ] = useLeaveGroup();
+
+  const handleCreateGroup = async () => {
+    const { data: { createGroup: { group: { id } }} } = await createGroup({ variables: { input : {} }});
+    setGroupId({ variables: { groupId: id } });
+  }
+
+  const handleJoinGroup = async (code) => {
+    const { data: { joinGroup: { group: { id } }} } = await joinGroup({ variables: { input: { code: code.toUpperCase() }}});
+    setGroupId({ variables: { groupId: id } });
+    setCode("");
+    Keyboard.dismiss();
+  }
+
+  const handleCloseGroup = async () => {
+    leaveGroup({ variables: { input: { id: groupIdData.groupId }} });
+    deleteGroupId();
+  }
 
   return (
     <AnimatedImageBackground
@@ -94,7 +142,7 @@ const HomeScreen = ({ navigation, themedStyle }) => {
                 contentContainerStyle={{ flex: 1 }}
               >
                 {
-                  !loading ? (
+                  !contentLoading ? (
                     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'space-around' }}>
                       {
                         !codeFocused ? (
@@ -123,6 +171,9 @@ const HomeScreen = ({ navigation, themedStyle }) => {
                                   color: theme['color-basic-600']
                                 }}
                                 onSubmitEditing={() => {
+                                  if (name.trim() === viewerData?.viewer?.name) {
+                                    return;
+                                  }
                                   updateViewer({
                                     variables: {
                                       input: {
@@ -134,6 +185,9 @@ const HomeScreen = ({ navigation, themedStyle }) => {
                                 onFocus={() => setNameFocused(true)}
                                 onBlur={() => setNameFocused(false)}
                               />
+                              <View style={{ marginTop: 8 }}>
+                                <Spinner status={'control'} style={{ opacity: updateViewerLoading ? 1 : 0}} />
+                              </View>
                             </View>
                         ) : null
                       }
@@ -168,9 +222,12 @@ const HomeScreen = ({ navigation, themedStyle }) => {
                             maxLength={4}
                             onFocus={() => setCodeFocused(true)}
                             onBlur={() => setCodeFocused(false)}
+                            textStyle={{
+                              fontFamily: 'RobotoMonoBold',
+                            }}
                           />
                           <Button
-                            disabled={code.trim().length !== 4}
+                            disabled={code.trim().length !== 4 || joinGroupLoading}
                             appearance="outline"
                             status="control"
                             style={[ themedStyle.joinButton ]}
@@ -178,11 +235,7 @@ const HomeScreen = ({ navigation, themedStyle }) => {
                               if (code.trim().length !== 4) {
                                 return ;
                               }
-                              const { data: { joinGroup: { group: { id } }} } = await joinGroup({ variables: { input: { code: code.toUpperCase() }}});
-                              navigation.navigate("GroupLobby", {
-                                id, code
-                              });
-                              setCode("");
+                              handleJoinGroup(code);
                             }}
                           >
                             JOIN
@@ -199,21 +252,14 @@ const HomeScreen = ({ navigation, themedStyle }) => {
                 }
               </KeyboardAvoidingView>
               {
-                !loading ? (
+                !contentLoading ? (
                   <BottomButton
-                    key={`lol-${isProfileValid}`}
+                    key={`bottom-button-${isProfileValid}`}
                     hidden={!isProfileValid}
                     disabled={createGroupLoading || joinGroupLoading}
                     size="giant"
                     style={themedStyle.createButton}
-                    onPress={async () => {
-                      const { data: { createGroup: { group: { id, code } }} } = await createGroup({ variables: { input : {} }});
-                      await joinGroup({ variables: { input: { code }}})
-
-                      navigation.navigate("GroupLobby", {
-                        id, code
-                      });
-                    }}
+                    onPress={handleCreateGroup}
                     last
                   >
                     CREATE A ROOM
@@ -224,6 +270,7 @@ const HomeScreen = ({ navigation, themedStyle }) => {
           )
         }
       </SafeAreaConsumer>
+      {groupIdData?.groupId ? <GroupModal groupId={groupIdData.groupId} onClosed={handleCloseGroup} /> : null}
     </AnimatedImageBackground>
   );
 }

@@ -47,7 +47,7 @@ const UserAvatar = ({ user, size, borderWidth = 0, editable, ...props }) => {
     >
       <Avatar
         style={style.avatar}
-        source={DefaultAvatar}
+        source={{ uri: `https://api.adorable.io/avatars/${size}/${user.id}` }}
         {...props}
       />
       {
