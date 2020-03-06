@@ -1,31 +1,22 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { SafeAreaConsumer } from 'react-native-safe-area-context';
 import {
   Icon,
-  TopNavigation,
-  TopNavigationAction,
-  Layout,
   Text,
-  Card,
   withStyles,
-  Button,
   useTheme,
   Spinner
 } from '@ui-kitten/components';
 
-import { View, Image, TouchableOpacity, FlatList } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
+import { View, TouchableOpacity } from 'react-native';
 
 import useGetUserMovieGroupSelection from '../hooks/useGetUserMovieGroupSelection';
-
-import BottomButton from '../components/BottomButton';
-import UserAvatar from '../components/UserAvatar';
 
 import MovieBackdrop from '../components/MovieBackdrop';
 import MovieTitle from '../components/MovieTitle';
 import MovieOverview from '../components/MovieOverview';
 
-const GroupMovieSelection = ({ groupData, themedStyle, id }) => {
+const GroupMovieSelection = ({ groupData, themedStyle }) => {
   const { data: userMovieGroupSelectionData, loading: userMovieGroupSelectionLoading } = useGetUserMovieGroupSelection({ variables: { id: groupData.viewer.group.id }});
   const [ index, setIndex ] = useState(0);
   const theme = useTheme();
@@ -54,19 +45,6 @@ const GroupMovieSelection = ({ groupData, themedStyle, id }) => {
     movieSelection.sort((s1, s2) => s2.voteCount - s1.voteCount)
   ), [movieSelection])
 
-  const handleMovieChoice = (selected) => {
-    setIndex(index + 1);
-    createUserMovieGroupSelection({
-      variables: {
-        input: {
-          movieId: movieSelection[index].id,
-          groupId: groupData.viewer.group.id,
-          selected
-        }
-      }
-    })
-  }
-
   return (
     <View style={themedStyle.rootContainer}>
       <View style={themedStyle.codeLayout}>
@@ -82,7 +60,7 @@ const GroupMovieSelection = ({ groupData, themedStyle, id }) => {
         </View>
         <View style={themedStyle.voteContainer}>
           <Text category="s1" style={{ color: sortedMovieSelection.length - index === 0 ? theme['color-basic-600'] : 'white' }}>
-            Here's our final selection
+            {`Here's our final selection`}
           </Text>
           <Text
             style={[ themedStyle.code, { color: userMovieGroupSelectionLoading ? theme['color-basic-700'] : 'white' } ]}

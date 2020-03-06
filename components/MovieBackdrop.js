@@ -2,12 +2,14 @@ import React from 'react';
 import { View, Image } from 'react-native';
 import {
   withStyles,
-  Icon
+  Icon,
+  useTheme
 } from '@ui-kitten/components';
 import useDimensions from "react-native-use-dimensions";
 
 const MovieBackdrop = ({ themedStyle, movie }) => {
   const { screen } = useDimensions();
+  const theme = useTheme();
 
   return (
     movie.backdropPath || movie.posterPath ? (

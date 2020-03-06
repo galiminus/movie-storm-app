@@ -1,17 +1,11 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState } from 'react';
 import {
   Icon,
-  TopNavigation,
-  TopNavigationAction,
-  Layout,
   Text,
-  Card,
   withStyles,
-  Button,
 } from '@ui-kitten/components';
 
-import { View, Image, TouchableOpacity, FlatList } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
+import { View } from 'react-native';
 
 import useStartSelection from '../hooks/useStartSelection';
 

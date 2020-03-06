@@ -5,24 +5,19 @@ import {
   TopNavigation,
   TopNavigationAction,
   Layout,
-  Text,
-  Card,
   withStyles,
-  Button,
   Menu
 } from '@ui-kitten/components';
 import { Updates } from 'expo';
 
-import { View, Image, TouchableOpacity } from 'react-native';
+import { View } from 'react-native';
 import useDeleteViewer from '../hooks/useDeleteViewer';
 import useDeleteToken from '../hooks/useDeleteToken';
-import useGetToken from '../hooks/useGetToken';
 
 const SettingsScreen = ({ navigation, themedStyle }) => {
-  const [ deleteViewer, { loading, error } ] = useDeleteViewer();
+  const [ deleteViewer ] = useDeleteViewer();
   const [ deleteToken ] = useDeleteToken();
   const [ selectedIndex, setSelectedIndex ] = useState(null);
-  const { data: tokenData } = useGetToken();
 
   const items = [
     {

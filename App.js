@@ -1,7 +1,7 @@
 import 'react-native-gesture-handler';
 import React, { useState, useEffect } from 'react';
 
-import { StyleSheet, View, SafeAreaView, Text, StatusBar } from 'react-native';
+import { StatusBar } from 'react-native';
 import { ApolloProvider } from 'react-apollo';
 import { ApplicationProvider, IconRegistry } from '@ui-kitten/components';
 import { mapping, dark as darkTheme } from '@eva-design/eva';
@@ -18,7 +18,6 @@ import * as Font from 'expo-font';
 
 import createClient from './apolloClient';
 import useGetToken from './hooks/useGetToken';
-import useGetWizard from './hooks/useGetWizard';
 import WelcomeScreen from './screens/WelcomeScreen';
 import HomeScreen from './screens/HomeScreen';
 import MovieSelectionScreen from './screens/MovieSelectionScreen';

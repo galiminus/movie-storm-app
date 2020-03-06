@@ -6,16 +6,13 @@ import {
   TopNavigationAction,
   Layout,
   Text,
-  Card,
   withStyles,
   Button,
   ButtonGroup,
   Spinner,
-  Modal,
-  useTheme
 } from '@ui-kitten/components';
 import useDimensions from "react-native-use-dimensions";
-import { View, Image, Animated, Dimensions, Easing, TouchableOpacity, ImageBackground } from 'react-native';
+import { View, Animated, TouchableOpacity } from 'react-native';
 import useGetMovieSelection from '../hooks/useGetMovieSelection';
 import useCreateRating from '../hooks/useCreateRating';
 import BottomButton from '../components/BottomButton';
@@ -24,7 +21,6 @@ import MovieTitle from '../components/MovieTitle';
 import MovieOverview from '../components/MovieOverview';
 
 const MovieCard = ({ movie, themedStyle, onPressRate }) => {
-  const theme = useTheme();
   const [ chosenGrade, setChosenGrade ] = useState(0);
 
   return (
@@ -87,7 +83,7 @@ export const MovieCardScreenWithStyles = withStyles(MovieCard, theme => ({
 const MovieSelectionScreen = ({ navigation, route, themedStyle }) => {
   const [ createRating ] = useCreateRating();
 
-  const { data: movieSelectionData, loading: movieSelectionLoading } = useGetMovieSelection({ fetchPolicy: 'no-cache' });
+  const { data: movieSelectionData } = useGetMovieSelection({ fetchPolicy: 'no-cache' });
   const movieSelection = movieSelectionData?.viewer?.movieSelection || [];
   const [ index, setIndex ] = useState(0);
 
@@ -95,8 +91,6 @@ const MovieSelectionScreen = ({ navigation, route, themedStyle }) => {
   const [ rotations, setRotations ] = useState([]);
 
   const { screen } = useDimensions();
-
-  const theme = useTheme();
 
   const { initial } = route.params;
 
@@ -143,16 +137,18 @@ const MovieSelectionScreen = ({ navigation, route, themedStyle }) => {
               }
               rightControls={initial ? [
                 <TouchableOpacity
+                  key="text"
                   onPress={() => navigation.navigate("Home")}
                 >
                   <Text style={{ lineHeight: 24 }}>Skip this step</Text>
                 </TouchableOpacity>,
                 <TopNavigationAction
+                  key="icon"
                   icon={(style) => <Icon {...style} name='arrow-forward'/>}
                   onPress={() => navigation.navigate("Home")}
                 />
               ] : [
-                <Text style={{ lineHeight: 24, marginRight: 8 }}>
+                <Text style={{ lineHeight: 24, marginRight: 8 }} key="counter">
                   {movieSelection.length > 0 && `${counter}/${movieSelection.length}`}
                 </Text>,
               ]}
@@ -217,7 +213,7 @@ const MovieSelectionScreen = ({ navigation, route, themedStyle }) => {
                           handleNextMovie(index, offset);
                         }}
                       >
-                        I didn't see this movie
+                        {`I didn't see this movie`}
                       </BottomButton>
                     </Animated.View>
                   ) : null

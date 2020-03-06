@@ -1,35 +1,25 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState} from 'react';
 import { SafeAreaConsumer } from 'react-native-safe-area-context';
 import {
-  Icon,
-  TopNavigation,
-  TopNavigationAction,
-  Layout,
   Text,
-  Card,
   withStyles,
   Button,
   useTheme,
   Spinner
 } from '@ui-kitten/components';
 
-import { View, Image, TouchableOpacity, FlatList } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
+import { View } from 'react-native';
 
 import useGetGroupMovieSelection from '../hooks/useGetGroupMovieSelection';
 import useCreateUserMovieGroupSelection from '../hooks/useCreateUserMovieGroupSelection';
-
-import BottomButton from '../components/BottomButton';
-import UserAvatar from '../components/UserAvatar';
 
 import MovieBackdrop from '../components/MovieBackdrop';
 import MovieTitle from '../components/MovieTitle';
 import MovieOverview from '../components/MovieOverview';
 
-const GroupMovieSelection = ({ groupData, themedStyle, id }) => {
-  const { data: groupMovieSelectionData, loading: groupMovieSelectionLoading, error } = useGetGroupMovieSelection({ variables: { id: groupData.viewer.group.id }});
+const GroupMovieSelection = ({ groupData, themedStyle }) => {
+  const { data: groupMovieSelectionData, loading: groupMovieSelectionLoading } = useGetGroupMovieSelection({ variables: { id: groupData.viewer.group.id }});
   const [ createUserMovieGroupSelection ] = useCreateUserMovieGroupSelection();
-  const [ loading, setLoading ] = useState(false);
   const [ index, setIndex ] = useState(0);
   const theme = useTheme();
 

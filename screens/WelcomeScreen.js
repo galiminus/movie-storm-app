@@ -1,6 +1,6 @@
-import React, { createRef, useState, useEffect } from 'react';
-import { Layout, Text, withStyles, useTheme, Icon } from '@ui-kitten/components';
-import { StyleSheet, View, StatusBar, Animated } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { Layout, Text, withStyles, Icon } from '@ui-kitten/components';
+import { View, Animated } from 'react-native';
 import { SafeAreaConsumer } from 'react-native-safe-area-context';
 
 import BottomButton from '../components/BottomButton';
@@ -10,8 +10,6 @@ import useSetToken from '../hooks/useSetToken';
 const WelcomeScreen = ({ navigation, themedStyle }) => {
   const [ createViewer, { loading: createViewerLoading } ] = useCreateViewer();
   const [ setToken ] = useSetToken();
-  const theme = useTheme();
-  const iconRef = React.createRef();
 
   const [movieFontSize] = useState(new Animated.Value(0));
   const [stormFontSize] = useState(new Animated.Value(0));
@@ -89,7 +87,7 @@ const WelcomeScreen = ({ navigation, themedStyle }) => {
                 navigation.navigate("InitialMovieSelection", { initial: true });
               }}
             >
-              LET'S GET STARTED!
+              {`LET'S GET STARTED!`}
             </BottomButton>
           </View>
         )

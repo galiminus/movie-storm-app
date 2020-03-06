@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SafeAreaConsumer } from 'react-native-safe-area-context';
 import {
   Icon,
@@ -6,15 +6,13 @@ import {
   TopNavigationAction,
   Layout,
   Text,
-  Card,
   withStyles,
   Button,
   Input,
-  Modal,
   Spinner,
   useTheme,
 } from '@ui-kitten/components';
-import { View, Image, TouchableOpacity, KeyboardAvoidingView, Keyboard, Animated, ImageBackground } from 'react-native';
+import { View, TouchableOpacity, KeyboardAvoidingView, Keyboard, Platform } from 'react-native';
 import useDimensions from "react-native-use-dimensions";
 
 import BottomButton from '../components/BottomButton';
@@ -28,7 +26,6 @@ import useGetGroupId from '../hooks/useGetGroupId';
 import useDeleteGroupId from '../hooks/useDeleteGroupId';
 import useSetGroupId from '../hooks/useSetGroupId';
 import useLeaveGroup from '../hooks/useLeaveGroup';
-import useDeleteGroup from '../hooks/useDeleteGroup';
 
 import useUpdateViewer from '../hooks/useUpdateViewer';
 import useGetMovieSelection from '../hooks/useGetMovieSelection';
@@ -79,9 +76,6 @@ const HomeScreen = ({ navigation, themedStyle }) => {
 
   const [
     leaveGroup,
-    {
-      loading: leaveGroupLoading,
-    }
   ] = useLeaveGroup();
 
   const handleCreateGroup = async () => {
@@ -124,13 +118,14 @@ const HomeScreen = ({ navigation, themedStyle }) => {
                 }
                 rightControls={[
                   <TouchableOpacity
+                    key="text"
                     onPress={() => navigation.navigate("MovieSelection", { initial: false })}
                   >
                     <Text style={{ lineHeight: 24 }}>Rate more movies</Text>
                   </TouchableOpacity>,
                   <TopNavigationAction
+                    key="icon"
                     icon={(style) => <Icon {...style} name='film-outline'/>}
-                    onPress={() => navigation.navigate("Home")}
                     onPress={() => navigation.navigate("MovieSelection", { initial: false })}
                   />
                 ]}
@@ -299,7 +294,6 @@ export const HomeScreenWithStyles = withStyles(HomeScreen, theme => ({
     flex: 0,
   },
   profileContainer: {
-    alignItems: 'center',
     flex: 1,
     display: 'flex',
     alignItems: 'center',

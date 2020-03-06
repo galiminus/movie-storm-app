@@ -1,7 +1,7 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect } from 'react';
 
 import { Modalize } from 'react-native-modalize';
-import { Plaform, View } from 'react-native';
+import { Platform, View } from 'react-native';
 import {
   Spinner,
   useTheme
@@ -22,7 +22,6 @@ const GroupModal = ({ onClosed, groupId }) => {
 
   const {
     data: groupData,
-    loading: getGroupLoading,
     error: getGroupError,
   } = useGetGroup({
     variables: { id: groupId },

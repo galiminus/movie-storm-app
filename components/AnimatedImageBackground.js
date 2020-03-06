@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-import { Animated, Image, View } from 'react-native';
+import { Animated, View } from 'react-native';
 
 const BACKGROUND_IMAGE_OPACITY = 0.08;
 const BACKGROUND_IMAGE_INTERVAL = 10000;
@@ -9,7 +9,7 @@ const AnimatedImageBackground = ({ onLoadEnd, backgroundColor, images = [], chil
   const [ index, setIndex ] = useState(0);
   const [ imageLoaded, setImageLoaded ] = useState(false);
 
-  const [ imageBackgroundOpacity, setImageBackgroundOpacity ] = useState(new Animated.Value(0));
+  const [ imageBackgroundOpacity ] = useState(new Animated.Value(0));
   useEffect(() => {
     const timer = setTimeout(() => {
       Animated.timing(imageBackgroundOpacity, {

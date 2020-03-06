@@ -2,10 +2,8 @@ import React from 'react';
 import {
   Avatar,
   Icon,
-  withStyles
 } from '@ui-kitten/components';
-import { View, Text, TouchableOpacity } from 'react-native';
-import DefaultAvatar from '../assets/default-avatar.png';
+import { View, TouchableOpacity } from 'react-native';
 
 const UserAvatar = ({ user, size, borderWidth = 0, editable, ...props }) => {
   const style = {

@@ -78,12 +78,6 @@ const createClient = async () => {
     credentials: 'same-origin',
   })
 
-  const hasSubscriptionOperation = ({ query: { definitions } }) => {
-    return definitions.some(
-      ({ kind, operation }) => kind === 'OperationDefinition' && operation === 'subscription'
-    )
-  }
-
   const client = new ApolloClient({
     typeDefs: ``,
     resolvers: {
