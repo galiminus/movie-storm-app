@@ -11,6 +11,8 @@ import {
   Button,
   Menu
 } from '@ui-kitten/components';
+import { Updates } from 'expo';
+
 import { View, Image, TouchableOpacity } from 'react-native';
 import useDeleteViewer from '../hooks/useDeleteViewer';
 import useDeleteToken from '../hooks/useDeleteToken';
@@ -54,8 +56,8 @@ const SettingsScreen = ({ navigation, themedStyle }) => {
                   switch (selectedIndex) {
                     case 0: // Delete account
                       deleteViewer({ variables: { input: {} }}).then(() => {
-                         deleteToken();
-                         navigation.navigate("Welcome")
+                        deleteToken();
+                        Updates.reloadFromCache();
                       });
                   }
                 }}

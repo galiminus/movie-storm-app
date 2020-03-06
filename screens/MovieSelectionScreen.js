@@ -19,11 +19,12 @@ import { View, Image, Animated, Dimensions, Easing, TouchableOpacity, ImageBackg
 import useGetMovieSelection from '../hooks/useGetMovieSelection';
 import useCreateRating from '../hooks/useCreateRating';
 import BottomButton from '../components/BottomButton';
+import MovieBackdrop from '../components/MovieBackdrop';
+import MovieTitle from '../components/MovieTitle';
+import MovieOverview from '../components/MovieOverview';
 
 const MovieCard = ({ movie, themedStyle, onPressRate }) => {
   const theme = useTheme();
-  const [ overviewModalOpen, setOverviewModalOpen ] = useState(false);
-  const { screen } = useDimensions();
   const [ chosenGrade, setChosenGrade ] = useState(0);
 
   return (
@@ -32,51 +33,10 @@ const MovieCard = ({ movie, themedStyle, onPressRate }) => {
       style={[ themedStyle.card ]}
       key={movie.id}
     >
-        {
-          movie.backdropPath || movie.posterPath ? (
-            <View
-              style={themedStyle.backdropContainer}
-            >
-              <Image
-                style={[ themedStyle.backdrop, { width: screen.width - 32 }]}
-                resizeMode={'cover'}
-                source={{ uri: `https://image.tmdb.org/t/p/w780/${movie.backdropPath || movie.posterPath}` }}
-              />
-            </View>
-          ) : (
-            <View
-              style={themedStyle.noBackdrop}
-            >
-              <Icon width={92} height={92} fill={theme['color-basic-800']} name="image-2" />
-            </View>
-          )
-        }
-      <Text
-        style={themedStyle.title}
-        category='h6'
-        numberOfLines={1}
-      >
-        {movie.title}
-      </Text>
-      <View
-        style={themedStyle.overview}
-      >
-        {
-          movie.overview ? (
-            <TouchableOpacity
-              onPress={() => setOverviewModalOpen(true)}
-            >
-              <Text style={themedStyle.overviewText} numberOfLines={4}>
-                 {movie.overview}
-              </Text>
-            </TouchableOpacity>
-          ) : (
-            <Text style={[ themedStyle.overviewText, { fontFamily: 'CircularStdItalic', color: theme['color-basic-600'] } ]} numberOfLines={4}>
-              No description
-            </Text>
-          )
-        }
-      </View>
+      <MovieBackdrop movie={movie} />
+      <MovieTitle movie={movie} />
+      <MovieOverview movie={movie} />
+
       <View style={themedStyle.starsContainer} >
         <ButtonGroup style={themedStyle.buttonGroup} appearance='outline' status="warning" size="small">
           {
@@ -97,78 +57,11 @@ const MovieCard = ({ movie, themedStyle, onPressRate }) => {
         </ButtonGroup>
         <Text style={themedStyle.rateActionText}>Rate this movie</Text>
       </View>
-      <Modal
-        backdropStyle={themedStyle.modalBackdrop}
-        onBackdropPress={() => setOverviewModalOpen(false)}
-        visible={overviewModalOpen}
-      >
-        <View
-          style={themedStyle.overviewModalContainer}
-        >
-          <Text
-            style={[ themedStyle.title, { textDecorationLine: 'underline' }]}
-            category='h6'
-          >
-            {movie.title}
-          </Text>
-          <Text style={themedStyle.overviewText}>
-            {movie.overview}
-          </Text>
-          <Button
-            appearance="outline"
-            status="control"
-            style={themedStyle.closeButton}
-            size="tiny"
-            onPress={() => setOverviewModalOpen(false)}
-          >
-            CLOSE
-          </Button>
-        </View>
-      </Modal>
     </View>
   );
 }
 
 export const MovieCardScreenWithStyles = withStyles(MovieCard, theme => ({
-  title: {
-    marginHorizontal: 16,
-    marginTop: 16,
-    marginBottom: 8,
-  },
-  backdropContainer: {
-    flex: 1,
-    marginHorizontal: 16,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 1.5,
-    borderRadius: 8,
-  },
-  backdrop: {
-    flex: 1,
-    overflow: 'hidden',
-    borderRadius: 8,
-  },
-  noBackdrop: {
-    marginHorizontal: 16,
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: theme['color-basic-700'],
-    borderRadius: 8,
-  },
-  overview: {
-    borderTopWidth: 0.5,
-    marginHorizontal: 16,
-    paddingVertical: 8,
-    borderTopColor: theme['color-basic-600']
-  },
-  overviewText: {
-    textAlign: 'justify',
-  },
   card: {
     flex: 1,
     borderWidth: 0,
@@ -189,18 +82,6 @@ export const MovieCardScreenWithStyles = withStyles(MovieCard, theme => ({
     marginTop: 8,
     color: theme['color-warning-600']
   },
-  modalBackdrop: {
-    backgroundColor: 'rgba(0, 0, 0, 0.9)',
-  },
-  overviewModalContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: 300,
-  },
-  closeButton: {
-    marginTop: 32,
-    backgroundColor: 'black'
-  }
 }));
 
 const MovieSelectionScreen = ({ navigation, route, themedStyle }) => {

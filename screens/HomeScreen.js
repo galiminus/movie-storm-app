@@ -38,7 +38,6 @@ import GroupModal from '../components/GroupModal';
 const HomeScreen = ({ navigation, themedStyle }) => {
   const { data: viewerData } = useGetViewer();
   const [ updateViewer, { loading: updateViewerLoading } ] = useUpdateViewer();
-
   const [ code, setCode ] = useState("");
   const [ name, setName ] = useState("");
   useEffect(() => {
@@ -86,7 +85,7 @@ const HomeScreen = ({ navigation, themedStyle }) => {
   ] = useLeaveGroup();
 
   const handleCreateGroup = async () => {
-    const { data: { createGroup: { group: { id } }} } = await createGroup({ variables: { input : {} }});
+    const { data: { createGroup: { group: { id } }} } = await createGroup({ variables: { input: { selectionCount: 12 } }});
     setGroupId({ variables: { groupId: id } });
   }
 
@@ -149,12 +148,15 @@ const HomeScreen = ({ navigation, themedStyle }) => {
                             <View
                               style={themedStyle.profileContainer}
                             >
-                              <UserAvatar
-                                editable
-                                size={128}
-                                borderWidth={4}
-                                user={viewerData.viewer}
-                              />
+                              {
+                                viewerData?.viewer ? (
+                                  <UserAvatar
+                                    size={128}
+                                    borderWidth={4}
+                                    user={viewerData.viewer}
+                                  />
+                                ) : null
+                              }
                               <Input
                                 autoCorrect={false}
                                 style={[ themedStyle.nameInput, { width: CONTAINER_WIDTH }]}
@@ -207,7 +209,7 @@ const HomeScreen = ({ navigation, themedStyle }) => {
                           ]}
                         >
                           <Text style={{ width: '100%', textAlign: 'center' }}>
-                            Create or join a room to enter a two-round movie selection vote with your friends.
+                            Create or join a room to enter a movie selection vote with your friends.
                           </Text>
                           <Input
                             status={joinGroupError ? 'danger' : 'basic'}

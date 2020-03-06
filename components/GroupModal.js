@@ -6,13 +6,18 @@ import {
   Spinner,
   useTheme
 } from '@ui-kitten/components';
+import useDimensions from "react-native-use-dimensions";
+import { SafeAreaConsumer } from 'react-native-safe-area-context';
 
-import useGetViewer from '../hooks/useGetViewer';
 import useGetGroup from '../hooks/useGetGroup';
 
 import GroupLobby from './GroupLobby';
+import GroupMovieSelection from './GroupMovieSelection';
+import GoupFinalSelection from './GroupFinalSelection';
 
 const GroupModal = ({ onClosed, groupId }) => {
+  const { screen } = useDimensions();
+
   const modal = useRef(null);
 
   const {
@@ -40,6 +45,12 @@ const GroupModal = ({ onClosed, groupId }) => {
     case "initial":
       groupScreen = <GroupLobby groupData={groupData} />;
       break;
+    case "selection_started":
+      groupScreen = <GroupMovieSelection groupData={groupData} />;
+      break;
+    case "selection_done":
+      groupScreen = <GoupFinalSelection groupData={groupData} />;
+      break;
   }
 
   return (
@@ -58,23 +69,39 @@ const GroupModal = ({ onClosed, groupId }) => {
         showsVerticalScrollIndicator: false,
       }}
     >
+      <SafeAreaConsumer>
       {
-        groupData ? (
-          groupScreen
-        ) : (
+        (insets) => (
           <View
             style={{
-              flex: 1,
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginTop: '50%'
+              borderTopLeftRadius: 12,
+              borderTopRightRadius: 12,
+              overflow: 'hidden',
+              height: screen.height - insets.top - 14
             }}
           >
-            <Spinner status={'control'} />
+            {
+              groupData ? (
+                groupScreen
+              ) : (
+                <View
+                  style={{
+                    flex: 1,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginTop: '50%'
+                  }}
+                >
+                  <Spinner status={'control'} />
+                </View>
+              )
+
+            }
           </View>
         )
-
       }
+
+      </SafeAreaConsumer>
     </Modalize>
   );
 }

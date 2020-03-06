@@ -7,16 +7,12 @@ export const GET_GROUP = gql`
       id
       group(id: $id) {
         id
-        code
-        state
-        selectionCount
-        owner {
+        selection {
           id
-          name
-        }
-        users {
-          id
-          name
+          title
+          backdropPath
+          posterPath
+          overview
         }
       }
     }

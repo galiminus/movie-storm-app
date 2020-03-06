@@ -23,7 +23,6 @@ import WelcomeScreen from './screens/WelcomeScreen';
 import HomeScreen from './screens/HomeScreen';
 import MovieSelectionScreen from './screens/MovieSelectionScreen';
 import SettingsScreen from './screens/SettingsScreen';
-import GroupLobbyScreen from './screens/GroupLobbyScreen';
 
 const RootStack = createStackNavigator();
 
@@ -70,11 +69,6 @@ const Viewer = () => {
           name="Settings"
           component={SettingsScreen}
           options={DEFAULT_SCREEN_OPTIONS}
-        />
-        <RootStack.Screen
-          name="GroupLobby"
-          component={GroupLobbyScreen}
-          options={{ ...DEFAULT_SCREEN_OPTIONS, needUserConfirmation: true }}
         />
       </RootStack.Navigator>
     </NavigationContainer>
