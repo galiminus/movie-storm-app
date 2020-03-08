@@ -16,7 +16,7 @@ import GroupMovieSelection from './GroupMovieSelection';
 import GoupFinalSelection from './GroupFinalSelection';
 
 const GroupModal = ({ onClosed, groupId }) => {
-  const { screen } = useDimensions();
+  const { window } = useDimensions();
 
   const modal = useRef(null);
 
@@ -61,8 +61,7 @@ const GroupModal = ({ onClosed, groupId }) => {
       }}
       handlePosition={"outside"}
       onClosed={onClosed}
-      withReactModal={Platform.OS !== 'ios'}
-      withHandle={Platform.OS === 'ios'}
+      withHandle
       scrollViewProps={{
         showsHorizontalScrollIndicator: false,
         showsVerticalScrollIndicator: false,
@@ -76,7 +75,7 @@ const GroupModal = ({ onClosed, groupId }) => {
               borderTopLeftRadius: 12,
               borderTopRightRadius: 12,
               overflow: 'hidden',
-              height: screen.height - insets.top - 14
+              height: window.height - insets.top - 14 - (Platform.OS === 'ios' ? 0 : 20)
             }}
           >
             {

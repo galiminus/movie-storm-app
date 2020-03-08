@@ -90,7 +90,7 @@ const MovieSelectionScreen = ({ navigation, route, themedStyle }) => {
   const [ counter, setCounter ] = useState(1);
   const [ rotations, setRotations ] = useState([]);
 
-  const { screen } = useDimensions();
+  const { window } = useDimensions();
 
   const { initial } = route.params;
 
@@ -164,16 +164,16 @@ const MovieSelectionScreen = ({ navigation, route, themedStyle }) => {
                       style={{
                         flex: 1,
                         transform: [
-                          { translateX: -(screen.width  / 2) - 300 },
-                          { translateY: (screen.height  / 2) - 300},
+                          { translateX: -(window.width  / 2) - 300 },
+                          { translateY: (window.height  / 2) - 300},
                           { rotate: rotations[index + offset] ? rotations[index + offset] : 0 },
-                          { translateX: (screen.width  / 2) + 300 },
-                          { translateY: -(screen.height  / 2) + 300},
+                          { translateX: (window.width  / 2) + 300 },
+                          { translateY: -(window.height  / 2) + 300},
                         ],
                         position: 'absolute',
                         top: insets.top + 54,
                         left: 0,
-                        height: screen.height - insets.top - 54,
+                        height: window.height - insets.top - 54,
                         zIndex: 1 - offset,
                       }}
                     >

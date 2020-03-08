@@ -74,7 +74,7 @@ const createClient = async () => {
   });
 
   const httpLink = new HttpLink({
-    uri: process.env.NODE_ENV === 'development' ? Constants.manifest.extra.developmentApiUrl : Constants.manifest.extra.productionApiUrl,
+    uri: process.env.NODE_ENV === 'development' && false ? Constants.manifest.extra.developmentApiUrl : Constants.manifest.extra.productionApiUrl,
     credentials: 'same-origin',
   })
 

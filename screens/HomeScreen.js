@@ -42,8 +42,8 @@ const HomeScreen = ({ navigation, themedStyle }) => {
   }, [viewerData])
 
   const theme = useTheme();
-  const { screen } = useDimensions();
-  const CONTAINER_WIDTH = screen.width > 300 ? 300 : screen.width;
+  const { window } = useDimensions();
+  const CONTAINER_WIDTH = window.width > 300 ? 300 : window.width;
 
   const [ nameFocused, setNameFocused ] = useState(false);
   const [ codeFocused, setCodeFocused ] = useState(false);
@@ -53,7 +53,7 @@ const HomeScreen = ({ navigation, themedStyle }) => {
   const [ imageBackgroundLoaded, setImageBackgroundLoaded ] = useState(false);
 
   const contentLoading = !viewerData || !imageBackgroundLoaded;
-  const isProfileValid = name.trim().length > 0 && viewerData?.viewer?.name?.trim()?.length > 0;
+  const isProfileValid = name.trim().length > 0 || viewerData?.viewer?.name?.length > 0;
 
   const { data: groupIdData } = useGetGroupId();
   const [ deleteGroupId ] = useDeleteGroupId();
@@ -131,7 +131,7 @@ const HomeScreen = ({ navigation, themedStyle }) => {
                 ]}
               />
               <KeyboardAvoidingView
-                behavior={Platform.OS === "ios" ? "padding" : "height"}
+                behavior={Platform.OS === "ios" ? undefined : "height"}
                 style={{ flex: 1 }}
                 contentContainerStyle={{ flex: 1 }}
               >

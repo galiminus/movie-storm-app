@@ -15,7 +15,7 @@
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "cover",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#1f273c"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -24,10 +24,23 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "icon": "./assets/icon_ios.png",
+      "buildNumber": "1",
+      "bundleIdentifier": "com.moviestorm",
+    },
+    "android": {
+      "package": "com.moviestorm.app",
+      "versionCode": 1
+    },
+    "androidStatusBarColor": "#1f273c",
+    "androidStatusBar": {
+      "barStyle": "dark-content",
+      "backgroundColor": "#1f273c"
     },
     "extra": {
-      "developmentApiUrl": "http://192.168.1.10:8888/graphql"
+      "developmentApiUrl": "http://192.168.1.10:8888/graphql",
+      "productionApiUrl": "https://vn5ynigb4d.execute-api.eu-west-1.amazonaws.com/prod/graphql"
     }
   }
 }

@@ -8,7 +8,7 @@ import {
 import useDimensions from "react-native-use-dimensions";
 
 const MovieBackdrop = ({ themedStyle, movie }) => {
-  const { screen } = useDimensions();
+  const { window } = useDimensions();
   const theme = useTheme();
 
   return (
@@ -17,7 +17,7 @@ const MovieBackdrop = ({ themedStyle, movie }) => {
         style={themedStyle.backdropContainer}
       >
         <Image
-          style={[ themedStyle.backdrop, { width: screen.width - 32 }]}
+          style={[ themedStyle.backdrop, { width: window.width - 32 }]}
           resizeMode={'cover'}
           source={{ uri: `https://image.tmdb.org/t/p/w780/${movie.backdropPath || movie.posterPath}` }}
         />
